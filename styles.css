@@ -593,6 +593,77 @@ textarea {
   padding: 34px 0;
 }
 
+.method-hero {
+  padding: 46px 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.method-hero h1 {
+  margin: 14px 0 12px;
+  font-size: clamp(42px, 6vw, 74px);
+  line-height: 1.2;
+}
+
+.method-hero p {
+  max-width: 820px;
+  margin: 0;
+  color: #2d4057;
+  font-size: 22px;
+}
+
+.method-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 28px;
+  align-items: start;
+  padding: 34px 0;
+}
+
+.method-content {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 32px;
+}
+
+.method-content h2 {
+  margin: 30px 0 8px;
+  font-size: 26px;
+}
+
+.method-content h2:first-child {
+  margin-top: 0;
+}
+
+.method-content p {
+  margin: 0;
+  color: #2d4057;
+  font-size: 19px;
+}
+
+.method-side {
+  position: sticky;
+  top: 18px;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.method-side h2 {
+  margin: 0 0 14px;
+}
+
+.method-side ul {
+  margin: 0;
+  padding: 0 20px 0 0;
+  color: #d7dfe8;
+}
+
+.method-side li {
+  margin-bottom: 10px;
+}
+
 .article-body {
   background: var(--paper);
   border: 1px solid var(--line);
@@ -644,7 +715,8 @@ textarea {
 
   .hero,
   .admin-layout,
-  .article-page {
+  .article-page,
+  .method-layout {
     grid-template-columns: 1fr;
   }
 
@@ -661,6 +733,10 @@ textarea {
   }
 
   .preview-article {
+    position: static;
+  }
+
+  .method-side {
     position: static;
   }
 }
