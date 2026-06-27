@@ -533,6 +533,20 @@ textarea {
   gap: 12px;
 }
 
+.manager-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) .7fr .8fr;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.manager-count {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .manager-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -724,7 +738,8 @@ textarea {
   .workflow,
   .field-grid,
   .status-strip,
-  .manager-row {
+  .manager-row,
+  .manager-filters {
     grid-template-columns: 1fr;
   }
 

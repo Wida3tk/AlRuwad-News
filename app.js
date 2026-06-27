@@ -295,17 +295,64 @@ function managerRow(article) {
   `;
 }
 
+function articleMatchesFilters(article) {
+  const search = (document.querySelector("#managerSearch")?.value || "").trim().toLowerCase();
+  const status = document.querySelector("#managerStatus")?.value || "";
+  const category = document.querySelector("#managerCategory")?.value || "";
+  const haystack = [
+    article.title,
+    article.summary,
+    article.source,
+    article.category,
+    article.status,
+    ...(article.tags || [])
+  ].join(" ").toLowerCase();
+
+  if (search && !haystack.includes(search)) return false;
+  if (status && article.status !== status) return false;
+  if (category && article.category !== category) return false;
+  return true;
+}
+
+function populateManagerCategories() {
+  const select = document.querySelector("#managerCategory");
+  if (!select) return;
+  const current = select.value;
+  const categories = [...new Set(cachedAdminArticles.map((article) => article.category).filter(Boolean))].sort();
+  select.innerHTML = `<option value="">كل التصنيفات</option>${categories.map((category) => `<option value="${category}">${category}</option>`).join("")}`;
+  if (categories.includes(current)) select.value = current;
+}
+
+function renderArticleManagerList() {
+  const manager = document.querySelector("[data-article-manager]");
+  const count = document.querySelector("[data-manager-count]");
+  if (!manager) return;
+
+  const filtered = cachedAdminArticles.filter(articleMatchesFilters);
+  if (count) {
+    count.textContent = `عرض ${filtered.length} من ${cachedAdminArticles.length} خبر`;
+  }
+  if (!filtered.length) {
+    manager.innerHTML = "<p style=\"color:var(--muted);font-weight:700;\">لا توجد نتائج مطابقة.</p>";
+    return;
+  }
+  manager.innerHTML = filtered.map(managerRow).join("");
+}
+
 async function loadArticleManager() {
   const manager = document.querySelector("[data-article-manager]");
   if (!manager) return;
   try {
     pendingDeleteId = "";
     cachedAdminArticles = await api("/api/articles");
+    populateManagerCategories();
     if (!cachedAdminArticles.length) {
       manager.innerHTML = "<p style=\"color:var(--muted);font-weight:700;\">لا توجد أخبار بعد.</p>";
+      const count = document.querySelector("[data-manager-count]");
+      if (count) count.textContent = "لا توجد أخبار محفوظة.";
       return;
     }
-    manager.innerHTML = cachedAdminArticles.map(managerRow).join("");
+    renderArticleManagerList();
   } catch (error) {
     manager.innerHTML = `<p style="color:var(--red);font-weight:800;">${error.message}</p>`;
   }
@@ -362,6 +409,9 @@ async function renderAdmin() {
   document.querySelector("[data-publish]")?.addEventListener("click", () => saveDraft("منشور"));
   document.querySelector("[data-refresh-articles]")?.addEventListener("click", loadArticleManager);
   document.querySelector("[data-article-manager]")?.addEventListener("click", handleManagerClick);
+  document.querySelector("#managerSearch")?.addEventListener("input", renderArticleManagerList);
+  document.querySelector("#managerStatus")?.addEventListener("change", renderArticleManagerList);
+  document.querySelector("#managerCategory")?.addEventListener("change", renderArticleManagerList);
   document.querySelectorAll("input, select, textarea").forEach((input) => {
     input.addEventListener("input", updatePreview);
     input.addEventListener("change", updatePreview);

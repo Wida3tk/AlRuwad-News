@@ -154,6 +154,27 @@
         </div>
         <button class="button ghost" type="button" data-refresh-articles>تحديث القائمة</button>
       </div>
+      <div class="manager-filters">
+        <div class="field">
+          <label for="managerSearch">بحث</label>
+          <input id="managerSearch" placeholder="ابحثي بالعنوان أو المصدر أو الكلمات المفتاحية">
+        </div>
+        <div class="field">
+          <label for="managerStatus">الحالة</label>
+          <select id="managerStatus">
+            <option value="">كل الحالات</option>
+            <option value="منشور">منشور</option>
+            <option value="مسودة">مسودة</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="managerCategory">التصنيف</label>
+          <select id="managerCategory">
+            <option value="">كل التصنيفات</option>
+          </select>
+        </div>
+      </div>
+      <p class="manager-count" data-manager-count></p>
       <div class="article-manager" data-article-manager></div>
     </section>
   </main>
