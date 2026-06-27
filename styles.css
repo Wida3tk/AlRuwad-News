@@ -477,6 +477,36 @@ textarea {
   margin: 18px 0;
 }
 
+.article-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0 6px;
+}
+
+.copy-note {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.copy-output {
+  width: 100%;
+  min-height: 180px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffefa;
+  color: var(--ink);
+  padding: 12px;
+  margin: 12px 0;
+  resize: vertical;
+}
+
+.summary {
+  color: #2d4057;
+  font-weight: 700;
+}
+
 .status-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

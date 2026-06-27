@@ -382,6 +382,7 @@ async function renderArticlePage() {
     article = seedArticles[0];
   }
   const articles = await getArticles("منشور");
+  window.currentArticle = article;
 
   document.title = `${article.title} | الرواد نيوز`;
   articleRoot.innerHTML = `
@@ -389,6 +390,13 @@ async function renderArticlePage() {
       <span class="eyebrow">${article.category}</span>
       <h1>${article.title}</h1>
       <p class="summary">${article.summary}</p>
+      <div class="article-tools">
+        <button class="button" type="button" data-copy-full>نسخ الخبر جاهزًا</button>
+        <button class="button secondary" type="button" data-copy-brief>نسخ الملخص التنفيذي</button>
+        ${article.sourceUrl ? `<a class="button ghost" href="${article.sourceUrl}" target="_blank" rel="noopener">المصدر الأصلي</a>` : ""}
+        <span class="copy-note" data-copy-note></span>
+      </div>
+      <textarea class="copy-output hidden" data-copy-output readonly></textarea>
       <div class="story-meta">
         <span>${article.publishedAt}</span>
         <span>المصدر: ${article.source}</span>
@@ -411,6 +419,71 @@ async function renderArticlePage() {
       </div>
     </aside>
   `;
+  articleRoot.querySelector("[data-copy-full]")?.addEventListener("click", () => copyArticleText("full"));
+  articleRoot.querySelector("[data-copy-brief]")?.addEventListener("click", () => copyArticleText("brief"));
+}
+
+function buildFullArticleText(article) {
+  return [
+    article.title,
+    "",
+    article.summary,
+    "",
+    `السياق: ${article.context}`,
+    "",
+    ...article.body,
+    "",
+    `المصدر: ${article.source}`,
+    "ترجمة وتحرير: الرواد نيوز"
+  ].join("\n");
+}
+
+function buildBriefText(article) {
+  return [
+    `ملخص تنفيذي: ${article.title}`,
+    "",
+    article.summary,
+    "",
+    `لماذا يهم: ${article.context}`,
+    "",
+    `المصدر: ${article.source}`
+  ].join("\n");
+}
+
+async function copyArticleText(type) {
+  const article = window.currentArticle;
+  const note = document.querySelector("[data-copy-note]");
+  const output = document.querySelector("[data-copy-output]");
+  if (!article) return;
+  const text = type === "brief" ? buildBriefText(article) : buildFullArticleText(article);
+
+  try {
+    await navigator.clipboard.writeText(text);
+    if (output) output.classList.add("hidden");
+    if (note) note.textContent = type === "brief" ? "تم نسخ الملخص." : "تم نسخ الخبر.";
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    const copied = document.execCommand("copy");
+    area.remove();
+    if (copied) {
+      if (output) output.classList.add("hidden");
+      if (note) note.textContent = "تم النسخ.";
+    } else {
+      showManualCopy(text, note, output);
+    }
+  }
+}
+
+function showManualCopy(text, note, output) {
+  if (!output) return;
+  output.value = text;
+  output.classList.remove("hidden");
+  output.focus();
+  output.select();
+  if (note) note.textContent = "حددي النص المنسوخ واضغطي Ctrl+C.";
 }
 
 renderHome();
