@@ -1,0 +1,15 @@
+<svg width="960" height="220" viewBox="0 0 960 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="220" rx="24" fill="#F8F5EE"/>
+  <path d="M74 62H178" stroke="#C9A24A" stroke-width="10" stroke-linecap="round"/>
+  <path d="M92 94H178" stroke="#0B1F33" stroke-width="10" stroke-linecap="round"/>
+  <path d="M118 126H178" stroke="#8E1B2A" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="72" cy="62" r="8" fill="#C9A24A"/>
+  <circle cx="90" cy="94" r="8" fill="#0B1F33"/>
+  <circle cx="116" cy="126" r="8" fill="#8E1B2A"/>
+  <foreignObject x="226" y="44" width="664" height="132">
+    <div xmlns="http://www.w3.org/1999/xhtml" dir="rtl" style="font-family:'IBM Plex Sans Arabic','Cairo','Tahoma',sans-serif;text-align:right;color:#0B1F33;">
+      <div style="font-size:76px;font-weight:800;line-height:1;">الرواد</div>
+      <div style="color:#8E1B2A;font-size:24px;font-weight:700;line-height:1.55;">خبر واضح. مصدر ظاهر. سياق مفيد.</div>
+    </div>
+  </foreignObject>
+</svg>

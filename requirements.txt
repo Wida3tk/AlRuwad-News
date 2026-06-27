@@ -1,0 +1,2 @@
+# The current MVP uses only the Python standard library.
+# Keep this file so hosting providers detect the app as Python.

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة التحرير | الرواد نيوز</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <span>لوحة تحرير تجريبية</span>
+      <span>إدخال، ترجمة، تحرير، نشر</span>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>
+          <span class="brand-name">الرواد</span>
+          <span class="brand-subtitle">غرفة الأخبار</span>
+        </span>
+      </a>
+      <nav class="nav">
+        <a href="index.html">الموقع</a>
+        <a href="brand-board.html">الهوية</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-shell" data-admin-page>
+    <section class="login-card" data-login-panel>
+      <h1>دخول غرفة الأخبار</h1>
+      <p style="color:var(--muted);margin-top:0;">هذه نسخة محلية محمية لتجربة سير النشر الحقيقي.</p>
+      <div class="field">
+        <label for="username">اسم المستخدم</label>
+        <input id="username" value="admin" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="password">كلمة المرور</label>
+        <input id="password" type="password" value="alruwad2026" autocomplete="current-password">
+      </div>
+      <button class="button" type="button" data-login>دخول</button>
+      <div class="login-note" data-login-note></div>
+    </section>
+
+    <section class="admin-layout">
+      <form class="admin-panel hidden" data-editor-panel>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
+          <h2>إضافة خبر جديد</h2>
+          <button class="button ghost" type="button" data-logout>خروج</button>
+        </div>
+        <div class="status-strip">
+          <div class="status-pill active">مصدر</div>
+          <div class="status-pill">ترجمة</div>
+          <div class="status-pill">مراجعة</div>
+          <div class="status-pill">نشر</div>
+        </div>
+
+        <div class="field-grid" style="margin-top: 20px;">
+          <div class="field">
+            <label for="source">المصدر الأصلي</label>
+            <input id="source" value="Dawn" placeholder="مثال: Dawn">
+          </div>
+          <div class="field">
+            <label for="sourceUrl">رابط الخبر</label>
+            <input id="sourceUrl" placeholder="https://example.com/news">
+          </div>
+          <div class="field">
+            <label for="category">التصنيف</label>
+            <select id="category">
+              <option>باكستان والخليج</option>
+              <option>سياسة</option>
+              <option>اقتصاد</option>
+              <option>أمن وقضاء</option>
+              <option>مجتمع</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="originalLanguage">لغة المصدر</label>
+            <select id="originalLanguage">
+              <option>إنجليزي</option>
+              <option>أردو</option>
+              <option>عربي</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="importance">الأهمية</label>
+            <select id="importance">
+              <option>مهم</option>
+              <option>عاجل</option>
+              <option>متابعة</option>
+              <option>عادي</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tags">الكلمات المفتاحية</label>
+            <input id="tags" value="باكستان, الخليج, اقتصاد">
+          </div>
+          <div class="field full">
+            <label for="originalText">النص أو الرابط الأصلي</label>
+            <textarea id="originalText" placeholder="الصقي هنا نص الخبر الإنجليزي أو الأردي، أو رابط الخبر الأصلي.">Pakistan is seeking expanded economic cooperation with Gulf countries, focusing on investment, energy and remittances, according to officials cited by local media.</textarea>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="button ghost" type="button" data-import-url>استيراد من الرابط</button>
+          <button class="button secondary" type="button" data-generate>توليد مسودة عربية</button>
+          <button class="button ghost" type="button" onclick="document.querySelector('#originalText').value='';">تنظيف المصدر</button>
+        </div>
+
+        <div class="field" style="margin-top: 22px;">
+          <label for="title">العنوان العربي</label>
+          <input id="title" value="باكستان تبحث خطوات جديدة لتعزيز تعاونها مع دول الخليج">
+        </div>
+        <div class="field">
+          <label for="summary">الملخص</label>
+          <textarea id="summary">قالت مصادر رسمية إن الحكومة الباكستانية تعمل على حزمة تفاهمات جديدة تشمل الاستثمار والطاقة والتحويلات المالية.</textarea>
+        </div>
+        <div class="field">
+          <label for="context">لماذا يهم؟</label>
+          <textarea id="context">يعكس التحرك رغبة باكستان في تنويع مصادر التمويل وتعزيز علاقاتها الاقتصادية مع العواصم الخليجية.</textarea>
+        </div>
+        <div class="field">
+          <label for="body">نص الخبر بعد التحرير</label>
+          <textarea id="body">تدرس الحكومة الباكستانية توسيع التعاون الاقتصادي مع عدد من دول الخليج ضمن ملفات الاستثمار والطاقة وتحويلات العاملين في الخارج.
+
+وبحسب مصادر رسمية، تسعى إسلام آباد إلى جذب استثمارات جديدة في قطاعات البنية التحتية والطاقة، بالتزامن مع ضغوط اقتصادية داخلية.
+
+وتحظى العلاقات الخليجية الباكستانية بأهمية خاصة بسبب حجم الجالية الباكستانية في دول الخليج ودور التحويلات المالية في دعم الاقتصاد المحلي.</textarea>
+        </div>
+
+        <div class="toolbar">
+          <button class="button ghost" type="button" data-save-draft>حفظ كمسودة</button>
+          <button class="button" type="button" data-publish>نشر الخبر</button>
+          <span data-save-note style="align-self:center;color:var(--muted);font-weight:700;"></span>
+        </div>
+      </form>
+
+      <aside class="preview-article hidden" data-preview></aside>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

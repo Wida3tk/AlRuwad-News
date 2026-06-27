@@ -1,0 +1,15 @@
+<svg width="960" height="220" viewBox="0 0 960 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="220" rx="24" fill="#F8F5EE"/>
+  <g transform="translate(58 42)">
+    <circle cx="68" cy="68" r="52" stroke="#0B1F33" stroke-width="9"/>
+    <path d="M68 22L94 108L68 92L42 108L68 22Z" fill="#C9A24A"/>
+    <path d="M68 22V92" stroke="#0B1F33" stroke-width="6" stroke-linecap="round"/>
+    <path d="M32 68H104" stroke="#0B1F33" stroke-width="6" stroke-linecap="round" opacity=".72"/>
+  </g>
+  <foreignObject x="210" y="52" width="680" height="116">
+    <div xmlns="http://www.w3.org/1999/xhtml" dir="rtl" style="font-family:'IBM Plex Sans Arabic','Cairo','Tahoma',sans-serif;text-align:right;color:#0B1F33;">
+      <div style="font-size:70px;font-weight:800;line-height:1.02;">الرواد</div>
+      <div style="color:#8E1B2A;font-size:24px;font-weight:700;line-height:1.45;">رصد إخباري عربي مستقل</div>
+    </div>
+  </foreignObject>
+</svg>

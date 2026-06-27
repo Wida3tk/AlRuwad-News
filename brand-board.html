@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>هوية الرواد نيوز</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&family=Readex+Pro:wght@500;600;700&display=swap");
+
+    :root {
+      --ink: #0b1f33;
+      --gold: #c9a24a;
+      --cream: #f8f5ee;
+      --paper: #fffdf8;
+      --red: #8e1b2a;
+      --muted: #607084;
+      --line: #ded7c9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "IBM Plex Sans Arabic", "Cairo", Tahoma, Arial, sans-serif;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 64px;
+    }
+
+    .hero {
+      min-height: 420px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 34px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 38px;
+    }
+
+    .kicker {
+      color: var(--red);
+      font-weight: 800;
+      margin: 0 0 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(46px, 6.2vw, 78px);
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: 20px 0 0;
+      font-size: 22px;
+      color: #263b52;
+    }
+
+    .logo-card {
+      background: var(--ink);
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 18px 48px rgba(11, 31, 51, .16);
+    }
+
+    section {
+      padding: 36px 0 0;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .panel h3 {
+      margin: 0 0 8px;
+      font-size: 21px;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .logo-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .logos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .logo-preview {
+      min-height: 210px;
+      display: grid;
+      place-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .logo-preview.dark-preview {
+      background: var(--ink);
+    }
+
+    .brand-logo {
+      width: 100%;
+      min-height: 160px;
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 34px;
+      align-items: center;
+      direction: ltr;
+    }
+
+    .brand-logo.compact {
+      min-height: 128px;
+      gap: 24px;
+    }
+
+    .brand-logo.wordmark {
+      grid-template-columns: 140px 1fr;
+    }
+
+    .mark {
+      width: 112px;
+      height: 112px;
+      border: 8px solid var(--gold);
+      border-radius: 50%;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .mark::before {
+      content: "";
+      position: absolute;
+      inset: 23px 42px 18px;
+      background: var(--gold);
+      clip-path: polygon(50% 0, 100% 100%, 50% 74%, 0 100%);
+    }
+
+    .mark::after {
+      content: "";
+      position: absolute;
+      left: 21px;
+      right: 21px;
+      top: 50%;
+      height: 7px;
+      background: currentColor;
+      border-radius: 999px;
+      transform: translateY(-50%);
+    }
+
+    .mark.lines {
+      border: 0;
+      border-radius: 0;
+      height: 90px;
+      width: 126px;
+    }
+
+    .mark.lines::before,
+    .mark.lines::after {
+      display: none;
+    }
+
+    .mark.lines span {
+      display: block;
+      height: 10px;
+      border-radius: 999px;
+      margin: 15px 0;
+    }
+
+    .mark.lines span:nth-child(1) { width: 100px; background: var(--gold); }
+    .mark.lines span:nth-child(2) { width: 84px; background: var(--ink); }
+    .mark.lines span:nth-child(3) { width: 116px; background: var(--red); }
+
+    .brand-text {
+      direction: rtl;
+      text-align: right;
+      min-width: 0;
+    }
+
+    .brand-name {
+      font-family: "Readex Pro", "IBM Plex Sans Arabic", Tahoma, sans-serif;
+      font-size: clamp(54px, 7vw, 88px);
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .logo-card .brand-name,
+    .logo-stack > .logo-preview .brand-name {
+      font-size: clamp(50px, 5vw, 72px);
+    }
+
+    .brand-logo.compact .brand-name {
+      font-size: clamp(42px, 5vw, 66px);
+    }
+
+    .brand-kicker {
+      color: var(--gold);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+
+    .brand-line {
+      color: #d7dfe8;
+      font-size: 18px;
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+
+    .light-logo .brand-name { color: var(--ink); }
+    .light-logo .brand-line { color: var(--muted); }
+    .light-logo .brand-kicker { color: var(--red); }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .swatch {
+      min-height: 138px;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border: 1px solid rgba(11, 31, 51, .12);
+      font-weight: 800;
+    }
+
+    .swatch small {
+      display: block;
+      margin-top: 4px;
+      opacity: .74;
+      direction: ltr;
+      text-align: right;
+      font-weight: 700;
+    }
+
+    .dark { color: var(--cream); }
+    .ink { background: var(--ink); }
+    .gold { background: var(--gold); }
+    .cream { background: var(--cream); }
+    .paper { background: var(--paper); }
+    .red { background: var(--red); }
+
+    .voice {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 18px;
+    }
+
+    .sample {
+      background: var(--paper);
+      border-right: 5px solid var(--gold);
+      padding: 22px 24px;
+      border-radius: 8px 0 0 8px;
+    }
+
+    .sample .tag {
+      display: inline-block;
+      background: rgba(142, 27, 42, .1);
+      color: var(--red);
+      border-radius: 999px;
+      padding: 2px 12px;
+      font-weight: 800;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .sample h3 {
+      margin: 0 0 10px;
+      font-size: 27px;
+      line-height: 1.45;
+    }
+
+    .sample p {
+      margin: 0 0 10px;
+      color: #2d4057;
+      font-size: 18px;
+    }
+
+    @media (max-width: 820px) {
+      .hero,
+      .voice,
+      .logos,
+      .grid,
+      .swatches {
+        grid-template-columns: 1fr;
+      }
+
+      .swatch { min-height: 100px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="kicker">هوية أولية لمنصة إخبارية عربية مستقلة</p>
+        <h1>الرواد نيوز</h1>
+        <p>نقرأ الصحافة الباكستانية بعيون عربية، ونحول الخبر إلى مادة واضحة وموثوقة ومفهومة لصناع القرار والمهتمين بالمنطقة.</p>
+      </div>
+      <div class="logo-card">
+        <div class="brand-logo">
+          <div class="mark" aria-hidden="true"></div>
+          <div class="brand-text">
+            <div class="brand-name">الرواد</div>
+            <div class="brand-kicker">NEWS</div>
+            <div class="brand-line">من الصحافة الباكستانية إلى القارئ العربي</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>جوهر الهوية</h2>
+      <div class="grid">
+        <article class="panel">
+          <h3>واضحة</h3>
+          <p>لا ترجمة حرفية ولا عناوين مبهمة. الخبر يصل للقارئ العربي بلغة إعلامية مباشرة.</p>
+        </article>
+        <article class="panel">
+          <h3>حيادية</h3>
+          <p>نفرق بين الخبر والرأي، ونذكر المصدر، ونوضح التضارب عندما تختلف الروايات.</p>
+        </article>
+        <article class="panel">
+          <h3>ذات سياق</h3>
+          <p>لا نكتفي بما حدث، بل نشرح لماذا يهم، ومن الأطراف، وما أثره على المنطقة.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>اتجاهات الشعار</h2>
+      <div class="logo-stack">
+        <div class="logo-preview dark-preview">
+          <div class="brand-logo">
+            <div class="mark" aria-hidden="true"></div>
+            <div class="brand-text">
+              <div class="brand-name">الرواد</div>
+              <div class="brand-kicker">NEWS</div>
+              <div class="brand-line">من الصحافة الباكستانية إلى القارئ العربي</div>
+            </div>
+          </div>
+        </div>
+        <div class="logos">
+          <div class="logo-preview">
+            <div class="brand-logo compact light-logo">
+              <div class="mark" aria-hidden="true"></div>
+              <div class="brand-text">
+                <div class="brand-name">الرواد</div>
+                <div class="brand-kicker">رصد إخباري عربي مستقل</div>
+              </div>
+            </div>
+          </div>
+          <div class="logo-preview">
+            <div class="brand-logo compact wordmark light-logo">
+              <div class="mark lines" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="brand-text">
+                <div class="brand-name">الرواد</div>
+                <div class="brand-kicker">خبر واضح. مصدر ظاهر. سياق مفيد.</div>
+              </div>
+            </div>
+          </div>
+          <div class="logo-preview">
+            <div class="brand-logo compact light-logo">
+              <div class="mark" aria-hidden="true"></div>
+              <div class="brand-text">
+                <div class="brand-name">الرواد</div>
+                <div class="brand-line">منصة عربية لفهم الأخبار الباكستانية والعالمية</div>
+              </div>
+            </div>
+          </div>
+          <div class="sample">
+            <span class="tag">باكستان والخليج</span>
+            <h3>إسلام آباد تبحث توسيع التعاون الاقتصادي مع دول الخليج</h3>
+            <p>قالت مصادر رسمية إن الحكومة الباكستانية تعمل على حزمة تفاهمات جديدة تشمل الاستثمار والطاقة والتحويلات المالية.</p>
+            <p><strong>السياق:</strong> يعكس التحرك رغبة باكستان في تنويع مصادر التمويل وتعزيز علاقاتها الاقتصادية مع العواصم الخليجية.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>الألوان</h2>
+      <div class="swatches">
+        <div class="swatch ink dark">أزرق مؤسسي<small>#0B1F33</small></div>
+        <div class="swatch gold">ذهبي ريادي<small>#C9A24A</small></div>
+        <div class="swatch cream">خلفية هادئة<small>#F8F5EE</small></div>
+        <div class="swatch paper">ورق صحفي<small>#FFFDF8</small></div>
+        <div class="swatch red dark">تنبيه عاجل<small>#8E1B2A</small></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>النبرة التحريرية</h2>
+      <div class="voice">
+        <article class="panel">
+          <h3>وعد العلامة</h3>
+          <p>الرواد منصة عربية مستقلة ترصد الأخبار الباكستانية، وتقدمها بصياغة مهنية محايدة مع خلفية وسياق.</p>
+        </article>
+        <article class="panel">
+          <h3>جملة تعريفية مقترحة</h3>
+          <p>من الصحافة الباكستانية إلى القارئ العربي: خبر واضح، مصدر ظاهر، وسياق يساعدك على الفهم.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
