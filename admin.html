@@ -49,9 +49,10 @@
     <section class="admin-layout">
       <form class="admin-panel hidden" data-editor-panel>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;">
-          <h2>إضافة خبر جديد</h2>
+          <h2 data-editor-title>إضافة خبر جديد</h2>
           <button class="button ghost" type="button" data-logout>خروج</button>
         </div>
+        <input id="articleId" type="hidden">
         <div class="status-strip">
           <div class="status-pill active">مصدر</div>
           <div class="status-pill">ترجمة</div>
@@ -76,6 +77,7 @@
               <option>اقتصاد</option>
               <option>أمن وقضاء</option>
               <option>مجتمع</option>
+              <option>العالم</option>
             </select>
           </div>
           <div class="field">
@@ -133,6 +135,7 @@
         </div>
 
         <div class="toolbar">
+          <button class="button secondary" type="button" data-new-article>خبر جديد</button>
           <button class="button ghost" type="button" data-save-draft>حفظ كمسودة</button>
           <button class="button" type="button" data-publish>نشر الخبر</button>
           <span data-save-note style="align-self:center;color:var(--muted);font-weight:700;"></span>
@@ -140,6 +143,17 @@
       </form>
 
       <aside class="preview-article hidden" data-preview></aside>
+    </section>
+
+    <section class="admin-panel hidden" data-manager-panel style="margin-bottom:34px;">
+      <div class="section-head" style="margin-bottom:18px;">
+        <div>
+          <h2 class="section-title">إدارة الأخبار</h2>
+          <p>كل المواد المحفوظة في قاعدة البيانات. افتحي أي خبر للتعديل أو ألغِ نشره.</p>
+        </div>
+        <button class="button ghost" type="button" data-refresh-articles>تحديث القائمة</button>
+      </div>
+      <div class="article-manager" data-article-manager></div>
     </section>
   </main>
 

@@ -44,6 +44,9 @@ async function getArticles(status = "") {
   }
 }
 
+let cachedAdminArticles = [];
+let pendingDeleteId = "";
+
 function articleCard(article) {
   return `
     <a class="article-card" href="article.html?id=${encodeURIComponent(article.id)}">
@@ -67,6 +70,7 @@ async function renderHome() {
 
 function formPayload(status = "منشور") {
   return {
+    id: document.querySelector("#articleId")?.value || undefined,
     title: document.querySelector("#title")?.value.trim(),
     category: document.querySelector("#category")?.value,
     source: document.querySelector("#source")?.value.trim(),
@@ -80,6 +84,65 @@ function formPayload(status = "منشور") {
     body: (document.querySelector("#body")?.value || "").split(/\n+/).map((item) => item.trim()).filter(Boolean),
     tags: (document.querySelector("#tags")?.value || "").split(",").map((tag) => tag.trim()).filter(Boolean)
   };
+}
+
+function setField(selector, value) {
+  const node = document.querySelector(selector);
+  if (node) node.value = value || "";
+}
+
+function setSelectValue(selector, value) {
+  const node = document.querySelector(selector);
+  if (!node) return;
+  const exists = [...node.options].some((option) => option.value === value);
+  if (!exists && value) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    node.appendChild(option);
+  }
+  node.value = value || node.options[0]?.value || "";
+}
+
+function loadArticleIntoEditor(article) {
+  setField("#articleId", article.id);
+  setField("#source", article.source);
+  setField("#sourceUrl", article.sourceUrl);
+  setSelectValue("#category", article.category);
+  setSelectValue("#originalLanguage", article.originalLanguage);
+  setSelectValue("#importance", article.importance);
+  setField("#tags", article.tags.join(", "));
+  setField("#originalText", article.originalText);
+  setField("#title", article.title);
+  setField("#summary", article.summary);
+  setField("#context", article.context);
+  setField("#body", article.body.join("\n\n"));
+  const title = document.querySelector("[data-editor-title]");
+  if (title) title.textContent = "تعديل خبر";
+  const note = document.querySelector("[data-save-note]");
+  if (note) note.textContent = `تم فتح الخبر للتعديل: ${article.status}`;
+  updatePreview();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function resetEditor() {
+  setField("#articleId", "");
+  setField("#source", "Dawn");
+  setField("#sourceUrl", "");
+  setSelectValue("#category", "باكستان والخليج");
+  setSelectValue("#originalLanguage", "إنجليزي");
+  setSelectValue("#importance", "مهم");
+  setField("#tags", "باكستان, الخليج, اقتصاد");
+  setField("#originalText", "");
+  setField("#title", "");
+  setField("#summary", "");
+  setField("#context", "");
+  setField("#body", "");
+  const title = document.querySelector("[data-editor-title]");
+  if (title) title.textContent = "إضافة خبر جديد";
+  const note = document.querySelector("[data-save-note]");
+  if (note) note.textContent = "جاهز لإضافة خبر جديد.";
+  updatePreview();
 }
 
 function updatePreview() {
@@ -108,6 +171,8 @@ function setAdminState(authenticated) {
   document.querySelector("[data-login-panel]")?.classList.toggle("hidden", authenticated);
   document.querySelector("[data-editor-panel]")?.classList.toggle("hidden", !authenticated);
   document.querySelector("[data-preview]")?.classList.toggle("hidden", !authenticated);
+  document.querySelector("[data-manager-panel]")?.classList.toggle("hidden", !authenticated);
+  if (authenticated) loadArticleManager();
 }
 
 async function checkSession() {
@@ -205,8 +270,82 @@ async function saveDraft(status) {
         ? `تم نشر الخبر. <a href="article.html?id=${encodeURIComponent(article.id)}">افتحي الخبر</a>`
         : "تم حفظ الخبر كمسودة.";
     }
+    setField("#articleId", article.id);
+    await loadArticleManager();
   } catch (error) {
     if (note) note.textContent = error.message;
+  }
+}
+
+function managerRow(article) {
+  const statusClass = article.status === "منشور" ? "primary" : "";
+  return `
+    <article class="manager-row" data-row-id="${article.id}">
+      <div>
+        <h3>${article.title}</h3>
+        <p>${article.category} | ${article.status} | ${article.source} | ${article.publishedAt}</p>
+      </div>
+      <div class="manager-actions">
+        <button class="mini-button primary" type="button" data-edit-id="${article.id}">تعديل</button>
+        <a class="mini-button ${statusClass}" href="article.html?id=${encodeURIComponent(article.id)}">فتح</a>
+        <button class="mini-button" type="button" data-unpublish-id="${article.id}">إلغاء النشر</button>
+        <button class="mini-button danger" type="button" data-delete-id="${article.id}">حذف</button>
+      </div>
+    </article>
+  `;
+}
+
+async function loadArticleManager() {
+  const manager = document.querySelector("[data-article-manager]");
+  if (!manager) return;
+  try {
+    pendingDeleteId = "";
+    cachedAdminArticles = await api("/api/articles");
+    if (!cachedAdminArticles.length) {
+      manager.innerHTML = "<p style=\"color:var(--muted);font-weight:700;\">لا توجد أخبار بعد.</p>";
+      return;
+    }
+    manager.innerHTML = cachedAdminArticles.map(managerRow).join("");
+  } catch (error) {
+    manager.innerHTML = `<p style="color:var(--red);font-weight:800;">${error.message}</p>`;
+  }
+}
+
+async function unpublishArticle(id) {
+  const article = cachedAdminArticles.find((item) => item.id === id);
+  if (!article) return;
+  await api("/api/articles", {
+    method: "POST",
+    body: JSON.stringify({ ...article, status: "مسودة" })
+  });
+  await loadArticleManager();
+}
+
+async function deleteArticle(id) {
+  if (pendingDeleteId !== id) {
+    pendingDeleteId = id;
+    const button = document.querySelector(`[data-delete-id="${CSS.escape(id)}"]`);
+    if (button) button.textContent = "تأكيد الحذف";
+    return;
+  }
+  await api(`/api/articles/${encodeURIComponent(id)}`, { method: "DELETE" });
+  pendingDeleteId = "";
+  if (document.querySelector("#articleId")?.value === id) resetEditor();
+  await loadArticleManager();
+}
+
+function handleManagerClick(event) {
+  const editId = event.target.closest("[data-edit-id]")?.dataset.editId;
+  const unpublishId = event.target.closest("[data-unpublish-id]")?.dataset.unpublishId;
+  const deleteId = event.target.closest("[data-delete-id]")?.dataset.deleteId;
+
+  if (editId) {
+    const article = cachedAdminArticles.find((item) => item.id === editId);
+    if (article) loadArticleIntoEditor(article);
+  } else if (unpublishId) {
+    unpublishArticle(unpublishId);
+  } else if (deleteId) {
+    deleteArticle(deleteId);
   }
 }
 
@@ -216,10 +355,13 @@ async function renderAdmin() {
 
   document.querySelector("[data-login]")?.addEventListener("click", login);
   document.querySelector("[data-logout]")?.addEventListener("click", logout);
+  document.querySelector("[data-new-article]")?.addEventListener("click", resetEditor);
   document.querySelector("[data-import-url]")?.addEventListener("click", importFromUrl);
   document.querySelector("[data-generate]")?.addEventListener("click", generateDraftFromSource);
   document.querySelector("[data-save-draft]")?.addEventListener("click", () => saveDraft("مسودة"));
   document.querySelector("[data-publish]")?.addEventListener("click", () => saveDraft("منشور"));
+  document.querySelector("[data-refresh-articles]")?.addEventListener("click", loadArticleManager);
+  document.querySelector("[data-article-manager]")?.addEventListener("click", handleManagerClick);
   document.querySelectorAll("input, select, textarea").forEach((input) => {
     input.addEventListener("input", updatePreview);
     input.addEventListener("change", updatePreview);
