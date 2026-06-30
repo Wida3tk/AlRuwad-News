@@ -207,9 +207,16 @@ async function logout() {
 }
 
 async function generateDraftFromSource() {
-  const payload = formPayload("مسودة");
   const note = document.querySelector("[data-save-note]");
   try {
+    const hasSourceText = !!document.querySelector("#originalText")?.value.trim();
+    const hasSourceUrl = !!document.querySelector("#sourceUrl")?.value.trim();
+    if (!hasSourceText && hasSourceUrl) {
+      if (note) note.textContent = "جاري استيراد الرابط قبل توليد المسودة...";
+      await importFromUrl();
+    }
+
+    const payload = formPayload("مسودة");
     const draft = await api("/api/draft", {
       method: "POST",
       body: JSON.stringify(payload)
@@ -218,6 +225,9 @@ async function generateDraftFromSource() {
     document.querySelector("#summary").value = draft.summary;
     document.querySelector("#context").value = draft.context;
     document.querySelector("#body").value = draft.body.join("\n\n");
+    if (draft.title && draft.title !== "تطور جديد في باكستان يثير اهتمام الصحافة المحلية") {
+      setSelectValue("#category", payload.category === "باكستان والخليج" ? "العالم" : payload.category);
+    }
     if (note) note.textContent = "تم توليد مسودة عربية. راجعيها قبل النشر.";
     updatePreview();
   } catch (error) {
@@ -242,6 +252,7 @@ async function importFromUrl() {
     document.querySelector("#source").value = imported.source || "";
     document.querySelector("#sourceUrl").value = imported.sourceUrl || url;
     document.querySelector("#originalLanguage").value = imported.originalLanguage === "English" ? "إنجليزي" : imported.originalLanguage || "إنجليزي";
+    if (imported.category) setSelectValue("#category", imported.category);
     document.querySelector("#originalText").value = imported.originalText || "";
     if (imported.title) document.querySelector("#title").value = imported.title;
     if (imported.summary) document.querySelector("#summary").value = imported.summary;
