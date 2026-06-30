@@ -59,6 +59,32 @@ function articleCard(article) {
   `;
 }
 
+function legacySlug(text) {
+  const chars = [];
+  for (const char of (text || "").trim().toLowerCase()) {
+    if (/[\p{L}\p{N}]/u.test(char)) {
+      chars.push(char);
+    } else if (chars.length && chars[chars.length - 1] !== "-") {
+      chars.push("-");
+    }
+  }
+  return chars.join("").replace(/^-|-$/g, "").slice(0, 90);
+}
+
+async function findArticleByIdentifier(id) {
+  try {
+    return await api(`/api/articles/${encodeURIComponent(id)}`);
+  } catch {
+    const articles = await getArticles();
+    return articles.find((article) => (
+      article.id === id ||
+      legacySlug(article.title) === id ||
+      encodeURIComponent(article.id) === id ||
+      encodeURIComponent(legacySlug(article.title)) === id
+    ));
+  }
+}
+
 async function renderHome() {
   const grid = document.querySelector("[data-article-grid]");
   const brief = document.querySelector("[data-brief-list]");
@@ -66,7 +92,9 @@ async function renderHome() {
 
   const articles = await getArticles("منشور");
   grid.innerHTML = articles.slice(0, 6).map(articleCard).join("");
-  brief.innerHTML = articles.slice(0, 5).map((article) => `<li>${article.title}</li>`).join("");
+  brief.innerHTML = articles.slice(0, 5).map((article) => (
+    `<li><a href="article.html?id=${encodeURIComponent(article.id)}">${article.title}</a></li>`
+  )).join("");
 }
 
 function formPayload(status = "منشور") {
@@ -460,9 +488,8 @@ async function renderArticlePage() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id") || "pak-gulf-economy";
   let article;
-  try {
-    article = await api(`/api/articles/${encodeURIComponent(id)}`);
-  } catch {
+  article = await findArticleByIdentifier(id);
+  if (!article) {
     articleRoot.innerHTML = `
       <article class="article-body">
         <span class="eyebrow">غير متاح</span>
