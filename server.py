@@ -110,6 +110,27 @@ def make_slug(text: str) -> str:
     return f"{prefix}-{digest}" if prefix else f"article-{digest}"
 
 
+def make_legacy_slug(text: str) -> str:
+    allowed = []
+    for char in text.strip().lower():
+        if char.isalnum() or "\u0600" <= char <= "\u06ff":
+            allowed.append(char)
+        elif allowed and allowed[-1] != "-":
+            allowed.append("-")
+    return "".join(allowed).strip("-")[:90]
+
+
+def find_article_by_id(conn: sqlite3.Connection, article_id: str) -> sqlite3.Row | None:
+    row = conn.execute("SELECT * FROM articles WHERE id = ?", (article_id,)).fetchone()
+    if row:
+        return row
+
+    for candidate in conn.execute("SELECT * FROM articles").fetchall():
+        if make_legacy_slug(candidate["title"]) == article_id or make_slug(candidate["title"]) == article_id:
+            return candidate
+    return None
+
+
 def password_hash(password: str, salt: str | None = None) -> str:
     salt = salt or secrets.token_hex(16)
     digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 120_000)
@@ -447,7 +468,7 @@ class Handler(SimpleHTTPRequestHandler):
         if path.startswith("/api/articles/"):
             article_id = unquote(path.rsplit("/", 1)[-1])
             with db() as conn:
-                row = conn.execute("SELECT * FROM articles WHERE id = ?", (article_id,)).fetchone()
+                row = find_article_by_id(conn, article_id)
             if not row:
                 self.send_json({"error": "not_found"}, 404)
                 return

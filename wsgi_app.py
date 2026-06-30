@@ -174,7 +174,7 @@ def application(environ, start_response):
         if method == "GET" and path.startswith("/api/articles/"):
             article_id = unquote(path.rsplit("/", 1)[-1])
             with server.db() as conn:
-                row = conn.execute("SELECT * FROM articles WHERE id = ?", (article_id,)).fetchone()
+                row = server.find_article_by_id(conn, article_id)
             if not row:
                 return json_response(start_response, {"error": "not_found"}, 404)
             return json_response(start_response, server.article_from_row(row))
