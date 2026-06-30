@@ -176,6 +176,7 @@ def init_db() -> None:
               category TEXT NOT NULL,
               source TEXT NOT NULL,
               source_url TEXT DEFAULT '',
+              image_url TEXT DEFAULT '',
               original_language TEXT DEFAULT '',
               original_text TEXT DEFAULT '',
               status TEXT NOT NULL,
@@ -190,6 +191,10 @@ def init_db() -> None:
             );
             """
         )
+
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(articles)").fetchall()}
+        if "image_url" not in columns:
+            conn.execute("ALTER TABLE articles ADD COLUMN image_url TEXT DEFAULT ''")
 
         user_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
         if user_count == 0:
@@ -233,6 +238,7 @@ def article_from_row(row: sqlite3.Row) -> dict:
         "category": row["category"],
         "source": row["source"],
         "sourceUrl": row["source_url"],
+        "imageUrl": row["image_url"] if "image_url" in row.keys() else "",
         "originalLanguage": row["original_language"],
         "originalText": row["original_text"],
         "status": row["status"],
@@ -353,6 +359,7 @@ def import_article_from_url(url: str) -> dict:
     )
     title = clean_text(title.replace(" - DAWN.COM", "").replace("| Dawn", ""))
     description = clean_text(parser.meta.get("og:description") or parser.meta.get("description") or "")
+    image_url = clean_text(parser.meta.get("og:image") or parser.meta.get("twitter:image") or "")
     source = "Dawn" if "dawn.com" in parsed.netloc else parsed.netloc.replace("www.", "")
     body = unique_preserve_order(parser.paragraphs)[:18]
     if len(body) < 2:
@@ -362,6 +369,7 @@ def import_article_from_url(url: str) -> dict:
         "title": title,
         "source": source,
         "sourceUrl": url,
+        "imageUrl": image_url,
         "originalLanguage": "English",
         "category": "العالم" if "world" in markup.lower() or "/news/" in parsed.path else "",
         "summary": description,
@@ -540,14 +548,15 @@ class Handler(SimpleHTTPRequestHandler):
                 conn.execute(
                     """
                     INSERT INTO articles (
-                      id, title, category, source, source_url, original_language, original_text,
+                      id, title, category, source, source_url, image_url, original_language, original_text,
                       status, importance, summary, context, body, tags, published_at, created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT(id) DO UPDATE SET
                       title=excluded.title,
                       category=excluded.category,
                       source=excluded.source,
                       source_url=excluded.source_url,
+                      image_url=excluded.image_url,
                       original_language=excluded.original_language,
                       original_text=excluded.original_text,
                       status=excluded.status,
@@ -565,6 +574,7 @@ class Handler(SimpleHTTPRequestHandler):
                         payload.get("category") or "سياسة",
                         payload.get("source") or "مصدر باكستاني",
                         payload.get("sourceUrl") or "",
+                        payload.get("imageUrl") or "",
                         payload.get("originalLanguage") or "",
                         payload.get("originalText") or "",
                         payload.get("status") or "مسودة",

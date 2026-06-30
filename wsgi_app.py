@@ -112,14 +112,15 @@ def save_article(payload):
         conn.execute(
             """
             INSERT INTO articles (
-              id, title, category, source, source_url, original_language, original_text,
+              id, title, category, source, source_url, image_url, original_language, original_text,
               status, importance, summary, context, body, tags, published_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
               title=excluded.title,
               category=excluded.category,
               source=excluded.source,
               source_url=excluded.source_url,
+              image_url=excluded.image_url,
               original_language=excluded.original_language,
               original_text=excluded.original_text,
               status=excluded.status,
@@ -137,6 +138,7 @@ def save_article(payload):
                 payload.get("category") or "سياسة",
                 payload.get("source") or "مصدر",
                 payload.get("sourceUrl") or "",
+                payload.get("imageUrl") or "",
                 payload.get("originalLanguage") or "",
                 payload.get("originalText") or "",
                 payload.get("status") or "مسودة",

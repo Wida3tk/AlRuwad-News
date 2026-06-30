@@ -51,12 +51,20 @@ let loadedArticleSourceUrl = "";
 function articleCard(article) {
   return `
     <a class="article-card" href="article.html?id=${encodeURIComponent(article.id)}">
+      ${articleImage(article, "card")}
       <span class="eyebrow">${article.category}</span>
       <h3>${article.title}</h3>
       <p>${article.summary}</p>
       <div class="tag-row">${article.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
     </a>
   `;
+}
+
+function articleImage(article, variant = "card") {
+  if (article.imageUrl) {
+    return `<div class="news-image ${variant}"><img src="${article.imageUrl}" alt="${article.title}" loading="lazy"></div>`;
+  }
+  return `<div class="news-image ${variant} fallback"><span>${article.category || "الرواد"}</span></div>`;
 }
 
 function legacySlug(text) {
@@ -88,10 +96,32 @@ async function findArticleByIdentifier(id) {
 async function renderHome() {
   const grid = document.querySelector("[data-article-grid]");
   const brief = document.querySelector("[data-brief-list]");
+  const lead = document.querySelector("[data-lead-story]");
   if (!grid || !brief) return;
 
   const articles = await getArticles("منشور");
-  grid.innerHTML = articles.slice(0, 6).map(articleCard).join("");
+  if (lead && articles[0]) {
+    lead.innerHTML = `
+      ${articleImage(articles[0], "lead")}
+      <div>
+        <span class="eyebrow">${articles[0].category}</span>
+        <h1>${articles[0].title}</h1>
+        <p>${articles[0].summary}</p>
+      </div>
+      <div>
+        <div class="story-meta">
+          <span>المصدر: ${articles[0].source}</span>
+          <span>ترجمة وتحرير: الرواد نيوز</span>
+          <span>${articles[0].publishedAt}</span>
+        </div>
+        <div class="toolbar">
+          <a class="button" href="article.html?id=${encodeURIComponent(articles[0].id)}">قراءة الخبر</a>
+          <a class="button ghost" href="methodology.html">منهجيتنا</a>
+        </div>
+      </div>
+    `;
+  }
+  grid.innerHTML = articles.slice(1, 7).map(articleCard).join("");
   brief.innerHTML = articles.slice(0, 5).map((article) => (
     `<li><a href="article.html?id=${encodeURIComponent(article.id)}">${article.title}</a></li>`
   )).join("");
@@ -104,6 +134,7 @@ function formPayload(status = "منشور") {
     category: document.querySelector("#category")?.value,
     source: document.querySelector("#source")?.value.trim(),
     sourceUrl: document.querySelector("#sourceUrl")?.value.trim(),
+    imageUrl: document.querySelector("#imageUrl")?.value.trim(),
     originalLanguage: document.querySelector("#originalLanguage")?.value,
     originalText: document.querySelector("#originalText")?.value.trim(),
     status,
@@ -138,6 +169,7 @@ function loadArticleIntoEditor(article) {
   loadedArticleSourceUrl = article.sourceUrl || "";
   setField("#source", article.source);
   setField("#sourceUrl", article.sourceUrl);
+  setField("#imageUrl", article.imageUrl);
   setSelectValue("#category", article.category);
   setSelectValue("#originalLanguage", article.originalLanguage);
   setSelectValue("#importance", article.importance);
@@ -160,6 +192,7 @@ function resetEditor() {
   loadedArticleSourceUrl = "";
   setField("#source", "Dawn");
   setField("#sourceUrl", "");
+  setField("#imageUrl", "");
   setSelectValue("#category", "باكستان والخليج");
   setSelectValue("#originalLanguage", "إنجليزي");
   setSelectValue("#importance", "مهم");
@@ -198,6 +231,7 @@ function updatePreview() {
   const category = payload.category || "سياسة";
 
   preview.innerHTML = `
+    ${articleImage(payload, "preview")}
     <span class="eyebrow">${category}</span>
     <h1>${title}</h1>
     <p class="summary">${summary}</p>
@@ -292,6 +326,7 @@ async function importFromUrl() {
     });
     document.querySelector("#source").value = imported.source || "";
     document.querySelector("#sourceUrl").value = imported.sourceUrl || url;
+    document.querySelector("#imageUrl").value = imported.imageUrl || "";
     document.querySelector("#originalLanguage").value = imported.originalLanguage === "English" ? "إنجليزي" : imported.originalLanguage || "إنجليزي";
     if (imported.category) setSelectValue("#category", imported.category);
     document.querySelector("#originalText").value = imported.originalText || "";
@@ -509,6 +544,7 @@ async function renderArticlePage() {
   document.title = `${article.title} | الرواد نيوز`;
   articleRoot.innerHTML = `
     <article class="article-body">
+      ${articleImage(article, "article")}
       <span class="eyebrow">${article.category}</span>
       <h1>${article.title}</h1>
       <p class="summary">${article.summary}</p>
@@ -532,7 +568,7 @@ async function renderArticlePage() {
       <div class="daily-brief">
         <h2>موجز اليوم</h2>
         <ul class="brief-list">
-          ${articles.slice(0, 4).map((item) => `<li>${item.title}</li>`).join("")}
+          ${articles.slice(0, 4).map((item) => `<li><a href="article.html?id=${encodeURIComponent(item.id)}">${item.title}</a></li>`).join("")}
         </ul>
       </div>
       <div class="source-box">
