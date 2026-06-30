@@ -46,6 +46,7 @@ async function getArticles(status = "") {
 
 let cachedAdminArticles = [];
 let pendingDeleteId = "";
+let loadedArticleSourceUrl = "";
 
 function articleCard(article) {
   return `
@@ -106,6 +107,7 @@ function setSelectValue(selector, value) {
 
 function loadArticleIntoEditor(article) {
   setField("#articleId", article.id);
+  loadedArticleSourceUrl = article.sourceUrl || "";
   setField("#source", article.source);
   setField("#sourceUrl", article.sourceUrl);
   setSelectValue("#category", article.category);
@@ -127,6 +129,7 @@ function loadArticleIntoEditor(article) {
 
 function resetEditor() {
   setField("#articleId", "");
+  loadedArticleSourceUrl = "";
   setField("#source", "Dawn");
   setField("#sourceUrl", "");
   setSelectValue("#category", "باكستان والخليج");
@@ -143,6 +146,15 @@ function resetEditor() {
   const note = document.querySelector("[data-save-note]");
   if (note) note.textContent = "جاهز لإضافة خبر جديد.";
   updatePreview();
+}
+
+function markEditorAsNewArticle(message = "") {
+  setField("#articleId", "");
+  loadedArticleSourceUrl = "";
+  const title = document.querySelector("[data-editor-title]");
+  if (title) title.textContent = "إضافة خبر جديد";
+  const note = document.querySelector("[data-save-note]");
+  if (note && message) note.textContent = message;
 }
 
 function updatePreview() {
@@ -244,6 +256,7 @@ async function importFromUrl() {
   }
 
   try {
+    markEditorAsNewArticle("سيتم إنشاء خبر جديد من هذا الرابط.");
     if (note) note.textContent = "جاري استيراد الخبر من الرابط...";
     const imported = await api("/api/import-url", {
       method: "POST",
@@ -266,6 +279,10 @@ async function importFromUrl() {
 async function saveDraft(status) {
   const note = document.querySelector("[data-save-note]");
   const payload = formPayload(status);
+  if (payload.id && payload.sourceUrl && loadedArticleSourceUrl && payload.sourceUrl !== loadedArticleSourceUrl) {
+    payload.id = undefined;
+    markEditorAsNewArticle("تم اعتبار الرابط الجديد خبرًا جديدًا.");
+  }
   if (!payload.title || !payload.summary || !payload.body.length) {
     if (note) note.textContent = "العنوان والملخص ونص الخبر مطلوبة.";
     return;
@@ -420,6 +437,12 @@ async function renderAdmin() {
   document.querySelector("[data-publish]")?.addEventListener("click", () => saveDraft("منشور"));
   document.querySelector("[data-refresh-articles]")?.addEventListener("click", loadArticleManager);
   document.querySelector("[data-article-manager]")?.addEventListener("click", handleManagerClick);
+  document.querySelector("#sourceUrl")?.addEventListener("input", () => {
+    const currentUrl = document.querySelector("#sourceUrl")?.value.trim() || "";
+    if (document.querySelector("#articleId")?.value && currentUrl && currentUrl !== loadedArticleSourceUrl) {
+      markEditorAsNewArticle("تم تغيير الرابط، وسيتم حفظ المادة كخبر جديد.");
+    }
+  });
   document.querySelector("#managerSearch")?.addEventListener("input", renderArticleManagerList);
   document.querySelector("#managerStatus")?.addEventListener("change", renderArticleManagerList);
   document.querySelector("#managerCategory")?.addEventListener("change", renderArticleManagerList);
@@ -440,7 +463,18 @@ async function renderArticlePage() {
   try {
     article = await api(`/api/articles/${encodeURIComponent(id)}`);
   } catch {
-    article = seedArticles[0];
+    articleRoot.innerHTML = `
+      <article class="article-body">
+        <span class="eyebrow">غير متاح</span>
+        <h1>لم يتم العثور على الخبر</h1>
+        <p class="summary">قد يكون الرابط قديمًا أو تم حذف الخبر من لوحة التحرير.</p>
+        <div class="toolbar">
+          <a class="button" href="index.html">العودة للرئيسية</a>
+          <a class="button ghost" href="admin.html">لوحة التحرير</a>
+        </div>
+      </article>
+    `;
+    return;
   }
   const articles = await getArticles("منشور");
   window.currentArticle = article;
