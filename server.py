@@ -100,14 +100,14 @@ def arabic_date() -> str:
 
 
 def make_slug(text: str) -> str:
-    allowed = []
-    for char in text.strip().lower():
-        if char.isalnum() or "\u0600" <= char <= "\u06ff":
-            allowed.append(char)
-        elif allowed and allowed[-1] != "-":
-            allowed.append("-")
-    slug = "".join(allowed).strip("-")
-    return slug[:90] or f"article-{secrets.token_hex(4)}"
+    digest = hashlib.sha1(text.strip().encode("utf-8")).hexdigest()[:12]
+    ascii_words = []
+    for word in text.lower().split():
+        clean = "".join(char for char in word if char.isascii() and char.isalnum())
+        if clean:
+            ascii_words.append(clean)
+    prefix = "-".join(ascii_words[:5])
+    return f"{prefix}-{digest}" if prefix else f"article-{digest}"
 
 
 def password_hash(password: str, salt: str | None = None) -> str:

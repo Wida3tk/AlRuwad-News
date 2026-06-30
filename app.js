@@ -467,10 +467,10 @@ async function renderArticlePage() {
       <article class="article-body">
         <span class="eyebrow">غير متاح</span>
         <h1>لم يتم العثور على الخبر</h1>
-        <p class="summary">قد يكون الرابط قديمًا أو تم حذف الخبر من لوحة التحرير.</p>
+        <p class="summary">قد يكون الرابط قديمًا أو أن المادة لم تعد منشورة.</p>
         <div class="toolbar">
           <a class="button" href="index.html">العودة للرئيسية</a>
-          <a class="button ghost" href="admin.html">لوحة التحرير</a>
+          <a class="button ghost" href="methodology.html">منهجيتنا</a>
         </div>
       </article>
     `;
